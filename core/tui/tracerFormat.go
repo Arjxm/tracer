@@ -98,17 +98,22 @@ func max(a, b int) int {
 
 func displayTree(node Node, level int) string {
 	var result string
-	var formated map[string]interface{}
-	// indent := strings.Repeat("  ", level)
-
-	onEnterFrom := node.OnEnter["From"]
-	onEnterTo := node.OnEnter["To"]
-	onEnterType := node.OnEnter["Type"]
-	onEnterValue := node.OnEnter["Value"]
-	onEnterInput := node.OnEnter["Input"]
-
-	onExitOutput := node.OnExit["Output"]
-
+	//indent := strings.Repeat("  ", level)
+	//
+	//onEnterFrom := node.OnEnter["From"]
+	//onEnterTo := node.OnEnter["To"]
+	//onEnterType := node.OnEnter["Type"].(string)
+	//onEnterValue := node.OnEnter["Value"]
+	//
+	//var onEnterValueStr string
+	//if onEnterValue == nil {
+	//	onEnterValueStr = "%!s(<nil>)"
+	//} else {
+	//	onEnterValueStr = fmt.Sprintf("%v", onEnterValue)
+	//}
+	//
+	//onExitOutput := node.OnExit["Output"]
+	//
 	//var style lipgloss.Style
 	//switch onEnterType {
 	//case "CALL":
@@ -121,25 +126,7 @@ func displayTree(node Node, level int) string {
 	//	style = lipgloss.NewStyle()
 	//}
 
-	//fmt.Printf("%s%s\n", indent, style.Render(fmt.Sprintf("%s -> %s", onEnterFrom, onEnterTo)))
-
-	formated = map[string]interface{}{
-		"type":   onEnterType,
-		"from":   onEnterFrom,
-		"to":     onEnterTo,
-		"input":  onEnterInput,
-		"value":  onEnterValue,
-		"output": onExitOutput,
-	}
-
-	// Append the formatted event to the file
-	err := appendEventToFile("events.json", formated)
-	if err != nil {
-		return ""
-	}
-	if err != nil {
-		return ""
-	}
+	//result += fmt.Sprintf("%s%s %s %s %s -> %s\n", indent, style.Render(onEnterType), onEnterFrom, onEnterTo, onEnterValueStr, onExitOutput)
 
 	for _, child := range node.Children {
 		result += displayTree(child, level+1)
@@ -149,7 +136,7 @@ func displayTree(node Node, level int) string {
 }
 
 func main() {
-	file, err := os.ReadFile("./trace.json")
+	file, err := os.ReadFile("./core/tui/trace.json")
 	if err != nil {
 		fmt.Println(err)
 		return

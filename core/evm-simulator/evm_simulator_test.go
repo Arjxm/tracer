@@ -19,7 +19,7 @@ func TestSimulate(t *testing.T) {
 
 	simulation := TxSimulationReq{
 		ChainId: 1,
-		TxHash:  "0xf9c8c7c01093b04629cb84790d13f076024e7446f0cc9749e9b0ac5ade624bdc",
+		TxHash:  "0xe881d7b1bb319ddf3d755f097f7829788f11c700d5c9072f19fa3c4a98587b96",
 	}
 	stateDB, err := state.New(types.EmptyRootHash, state.NewDatabase(rawdb.NewMemoryDatabase()), nil)
 	if err != nil {
