@@ -35,7 +35,7 @@ type TxSimulationResult struct {
 	GasUsed      uint64
 	ReturnedData []byte
 	GasLimit     uint64
-	Trace        interface{}
+	Trace        []byte
 }
 
 type Simulator struct {
@@ -70,8 +70,6 @@ func (s *Simulator) Simulate(simulationReq TxSimulationReq, stateDB *state.State
 		Input:    hexutil.MustDecode(tx["input"].(string)),
 		ChainId:  simulationReq.ChainId,
 	}
-
-	fmt.Printf("Simulating transaction: %v\n", simulation)
 
 	cfg := TxSimulationConfig(simulation, traceRecoder)
 
@@ -142,21 +140,20 @@ func (s *Simulator) Simulate(simulationReq TxSimulationReq, stateDB *state.State
 
 	gas, err := s.RpcClient.EstimateGas(simulation.From, simulation.To, simulation.Value, simulation.Input)
 	if err != nil {
-		fmt.Printf("Error estimating gas: %v\n", err)
 	} else {
 		cfg.GasLimit = gas
 	}
 
 	result, err := runtime.Execute(simulation.To, balance, code, simulation.Input, cfg, stateDB, recordToInit)
 	if err != nil {
-		err = traceRecoder.SaveResultToJSON("trace.json")
+		err = traceRecoder.SaveResultToJSON()
 		if err != nil {
 			return nil, err
 		}
 		return nil, err
 
 	}
-	err = traceRecoder.SaveResultToJSON("trace.json")
+	err = traceRecoder.SaveResultToJSON()
 	if err != nil {
 		return nil, err
 	}
@@ -164,5 +161,6 @@ func (s *Simulator) Simulate(simulationReq TxSimulationReq, stateDB *state.State
 	return &TxSimulationResult{
 		ReturnedData: result.Ret,
 		GasUsed:      result.GasUsed,
+		Trace:        traceRecoder.GetResultFromJSON(),
 	}, nil
 }

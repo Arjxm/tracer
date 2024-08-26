@@ -8,7 +8,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"io"
-	"log"
 	"math/big"
 	"net/http"
 	"strings"
@@ -158,8 +157,6 @@ func (c *Client) EstimateGas(from common.Address, to common.Address, value *big.
 		},
 	}
 
-	log.Printf("params: %v\n", params)
-
 	rpcResp, err := rpcPost(c.RpcUrl, "eth_estimateGas", params)
 	if err != nil {
 		return 0, fmt.Errorf("RPC call failed: %w", err)
@@ -183,8 +180,6 @@ func (c *Client) GetTxByHash(hash string) (map[string]interface{}, error) {
 		hash,
 	}
 
-	log.Printf("params: %v\n", params)
-
 	rpcResp, err := rpcPost(c.RpcUrl, "eth_getTransactionByHash", params)
 	if err != nil {
 		return nil, fmt.Errorf("RPC call failed: %w", err)
@@ -197,10 +192,8 @@ func (c *Client) GetTxByHash(hash string) (map[string]interface{}, error) {
 	var result map[string]interface{}
 	err = json.Unmarshal(rpcResp.Result, &result)
 	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal gas estimate: %w", err)
+		return nil, fmt.Errorf("failed to get tx: %w", err)
 	}
-
-	fmt.Printf("rpcResp: %v\n", result)
 	return result, nil
 }
 

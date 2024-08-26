@@ -19,14 +19,14 @@ func TestSimulate(t *testing.T) {
 
 	simulation := TxSimulationReq{
 		ChainId: 1,
-		TxHash:  "0xe881d7b1bb319ddf3d755f097f7829788f11c700d5c9072f19fa3c4a98587b96",
+		TxHash:  "0x0ca14589e6f2512282bfb1b0f49aed1b033e24be3a1c9a8df4327ebbc94aee65",
 	}
 	stateDB, err := state.New(types.EmptyRootHash, state.NewDatabase(rawdb.NewMemoryDatabase()), nil)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	_, err = sim.Simulate(simulation, stateDB, nil)
+	result, err := sim.Simulate(simulation, stateDB, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -34,7 +34,7 @@ func TestSimulate(t *testing.T) {
 	//log.Println("-----------------------------------------------------------")
 	//// just log the returned value for now
 	//log.Println(hexutil.Encode(result.ReturnedData))
-	//log.Println(result.GasUsed, result.GasLimit)
+	log.Println(result.GasUsed, result.GasLimit, result.Trace)
 
 	//for _, l := range result.Record.AccessList {
 	//	log.Println("ADDRESS: ", l.Address.Hex())

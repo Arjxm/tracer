@@ -1,7 +1,6 @@
-package main
+package tui
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
@@ -96,65 +95,46 @@ func max(a, b int) int {
 	return b
 }
 
-func displayTree(node Node, level int) string {
+func DisplayTree(node Node, level int) string {
 	var result string
-	//indent := strings.Repeat("  ", level)
-	//
-	//onEnterFrom := node.OnEnter["From"]
-	//onEnterTo := node.OnEnter["To"]
-	//onEnterType := node.OnEnter["Type"].(string)
-	//onEnterValue := node.OnEnter["Value"]
-	//
-	//var onEnterValueStr string
-	//if onEnterValue == nil {
-	//	onEnterValueStr = "%!s(<nil>)"
-	//} else {
-	//	onEnterValueStr = fmt.Sprintf("%v", onEnterValue)
-	//}
-	//
-	//onExitOutput := node.OnExit["Output"]
-	//
-	//var style lipgloss.Style
-	//switch onEnterType {
-	//case "CALL":
-	//	style = callStyle
-	//case "STATICCALL":
-	//	style = staticCallStyle
-	//case "DELEGATECALL":
-	//	style = delegateCallStyle
-	//default:
-	//	style = lipgloss.NewStyle()
-	//}
+	indent := strings.Repeat("  ", level)
 
-	//result += fmt.Sprintf("%s%s %s %s %s -> %s\n", indent, style.Render(onEnterType), onEnterFrom, onEnterTo, onEnterValueStr, onExitOutput)
+	onEnterFrom := node.OnEnter["From"]
+	onEnterTo := node.OnEnter["To"]
+	onEnterType := node.OnEnter["Type"].(string)
+	onEnterValue := node.OnEnter["Value"]
+
+	var onEnterValueStr string
+	if onEnterValue == nil {
+		onEnterValueStr = "%!s(<nil>)"
+	} else {
+		onEnterValueStr = fmt.Sprintf("%v", onEnterValue)
+	}
+
+	onExitOutput := node.OnExit["Output"]
+
+	var style lipgloss.Style
+	switch onEnterType {
+	case "CALL":
+		style = callStyle
+	case "STATICCALL":
+		style = staticCallStyle
+	case "DELEGATECALL":
+		style = delegateCallStyle
+	default:
+		style = lipgloss.NewStyle()
+	}
+
+	result += fmt.Sprintf("%s%s From: %s To: %s Value: %s -> Output: %s\n", indent, style.Render(onEnterType), onEnterFrom, onEnterTo, onEnterValueStr, onExitOutput)
 
 	for _, child := range node.Children {
-		result += displayTree(child, level+1)
+		result += DisplayTree(child, level+1)
 	}
 
 	return result
 }
 
-func main() {
-	file, err := os.ReadFile("./core/tui/trace.json")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	var trace Event
-	err = json.Unmarshal(file, &trace)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	var content string
-	for _, node := range trace {
-		content += displayTree(node, 0)
-		content += "\n"
-	}
-
+func Display(content string) {
 	m := model{content: content}
 
 	if err := tea.NewProgram(m).Start(); err != nil {
@@ -162,46 +142,4 @@ func main() {
 		os.Exit(1)
 	}
 
-	//abiFragments, err := decoder.ParseContractABI(decoder.ABI)
-	//fun := decoder.GetFuncFragment(abiFragments)
-	//
-	//if err != nil {
-	//	fmt.Println("Error parsing contract ABI:", err)
-	//	return
-	//}
-	//
-	//// Print the parsed ABI fragments
-	//for _, fragment := range *fun {
-	//	fmt.Printf("Name: %s\n", fragment.Name)
-	//	fmt.Printf("Type: %s\n", fragment.Type)
-	//	fmt.Printf("Inputs: %+v\n", fragment.Inputs)
-	//	fmt.Printf("Outputs: %+v\n", fragment.Outputs)
-	//	fmt.Printf("Constant: %t\n", fragment.Constant)
-	//	fmt.Printf("Payable: %t\n", fragment.Payable)
-	//	fmt.Printf("Anonymous: %t\n", fragment.Anonymous)
-	//	fmt.Printf("StateMutability: %s\n", fragment.StateMutability)
-	//	fmt.Println("------------------------")
-	//}
-}
-
-func appendEventToFile(filename string, event map[string]interface{}) error {
-	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	eventJSON, err := json.Marshal(event)
-	if err != nil {
-		return err
-	}
-
-	if _, err := file.Write(eventJSON); err != nil {
-		return err
-	}
-	if _, err := file.WriteString("\n"); err != nil {
-		return err
-	}
-
-	return nil
 }

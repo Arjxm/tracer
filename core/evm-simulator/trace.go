@@ -8,7 +8,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/tracing"
 	"math/big"
-	"os"
 )
 
 type TracerEvent struct {
@@ -62,6 +61,7 @@ type CustomTracer struct {
 	Events         []*TracerEvent
 	CurrentEvents  []*TracerEvent
 	TraceCompleted bool
+	JSONData       []byte
 }
 
 func NewCustomTracer() *CustomTracer {
@@ -96,7 +96,7 @@ func (t *CustomTracer) OnEnter(depth int, typ byte, from common.Address, to comm
 
 	t.CurrentEvents = append(t.CurrentEvents, event)
 
-	fmt.Printf("OnEnter: Depth: %d, Type: %s, From: %s, To: %s, Input: %x, Gas: %d, Value: %s\n", depth, callType, from.String(), to.String(), input, gas, value.String())
+	// fmt.Printf("OnEnter: Depth: %d, Type: %s, From: %s, To: %s, Input: %x, Gas: %d, Value: %s\n", depth, callType, from.String(), to.String(), input, gas, value.String())
 }
 
 func (t *CustomTracer) OnExit(depth int, output []byte, gasUsed uint64, err error, reverted bool) {
@@ -112,7 +112,7 @@ func (t *CustomTracer) OnExit(depth int, output []byte, gasUsed uint64, err erro
 		t.CurrentEvents = t.CurrentEvents[:len(t.CurrentEvents)-1]
 	}
 
-	fmt.Printf("OnExit: Depth: %d, Output: %x, GasUsed: %d, Err: %v, Reverted: %v\n", depth, output, gasUsed, err, reverted)
+	// fmt.Printf("OnExit: Depth: %d, Output: %x, GasUsed: %d, Err: %v, Reverted: %v\n", depth, output, gasUsed, err, reverted)
 }
 
 func (t *CustomTracer) OnOpcode(pc uint64, op byte, gas, cost uint64, scope tracing.OpContext, rData []byte, depth int, err error) {
@@ -164,16 +164,26 @@ func (t *CustomTracer) OnFault(pc uint64, op byte, gas, cost uint64, scope traci
 	// Add your implementation here if needed
 }
 
-func (t *CustomTracer) SaveResultToJSON(filename string) error {
+func (t *CustomTracer) SaveResultToJSON() error {
 	data, err := json.MarshalIndent(t.Events, "", "  ")
 	if err != nil {
 		return err
 	}
 
-	err = os.WriteFile(filename, data, 0644)
-	if err != nil {
-		return err
-	}
+	t.JSONData = data
 
 	return nil
+}
+
+func (t *CustomTracer) GetResultFromJSON() []byte {
+	if len(t.JSONData) == 0 {
+		return nil
+	}
+
+	err := json.Unmarshal(t.JSONData, &t.Events)
+	if err != nil {
+		return nil
+	}
+
+	return t.JSONData
 }
