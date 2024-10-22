@@ -62,7 +62,7 @@ func (s *Simulator) Simulate(simulationReq TxSimulationReq, stateDB *state.State
 		To:   common.HexToAddress(tx["to"].(string)),
 		BlockNumber: func() *big.Int {
 			v, _ := new(big.Int).SetString(tx["blockNumber"].(string)[2:], 16)
-			return v.Sub(v, big.NewInt(1))
+			return v.Sub(v, big.NewInt(128))
 		}(),
 		GasLimit: uint64(gasLimit),
 		GasPrice: big.NewInt(gasPrice),

@@ -96,7 +96,7 @@ func (t *CustomTracer) OnEnter(depth int, typ byte, from common.Address, to comm
 
 	t.CurrentEvents = append(t.CurrentEvents, event)
 
-	// fmt.Printf("OnEnter: Depth: %d, Type: %s, From: %s, To: %s, Input: %x, Gas: %d, Value: %s\n", depth, callType, from.String(), to.String(), input, gas, value.String())
+	fmt.Printf("OnEnter: Depth: %d, Type: %s, From: %s, To: %s, Input: %x, Gas: %d, Value: %s\n", depth, callType, from.String(), to.String(), input, gas, value.String())
 }
 
 func (t *CustomTracer) OnExit(depth int, output []byte, gasUsed uint64, err error, reverted bool) {
@@ -112,12 +112,12 @@ func (t *CustomTracer) OnExit(depth int, output []byte, gasUsed uint64, err erro
 		t.CurrentEvents = t.CurrentEvents[:len(t.CurrentEvents)-1]
 	}
 
-	// fmt.Printf("OnExit: Depth: %d, Output: %x, GasUsed: %d, Err: %v, Reverted: %v\n", depth, output, gasUsed, err, reverted)
+	fmt.Printf("OnExit: Depth: %d, Output: %x, GasUsed: %d, Err: %v, Reverted: %v\n", depth, output, gasUsed, err, reverted)
 }
 
 func (t *CustomTracer) OnOpcode(pc uint64, op byte, gas, cost uint64, scope tracing.OpContext, rData []byte, depth int, err error) {
 	opCode := evm.OpToString(op)
-
+	fmt.Println("OnOpcode: PC: ", pc, " OpCode: ", opCode, " Gas: ", gas, " Cost: ", cost, " Depth: ", depth, " Err: ", err)
 	if len(t.CurrentEvents) > 0 {
 		event := t.CurrentEvents[len(t.CurrentEvents)-1]
 

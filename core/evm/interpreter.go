@@ -290,8 +290,9 @@ func (in *EVMInterpreter) Run(contract *Contract, input []byte, readOnly bool) (
 		// Get the operation from the jump table and validate the stack to ensure there are
 		// enough stack items available to perform the operation.
 		op = contract.GetOp(pc)
-
+		fmt.Println("op", op, in.evm.Context.BlockNumber)
 		switch {
+
 		case readStorage(op):
 			// register address code if needed
 			err = in.registerAddressStorage(op, callContext, "0x"+in.evm.Context.BlockNumber.Text(16))

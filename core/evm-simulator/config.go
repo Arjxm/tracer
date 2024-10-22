@@ -16,7 +16,7 @@ func vmConfig(tracer *CustomTracer) vm.Config {
 			OnFault: func(pc uint64, op byte, gas, cost uint64, scope tracing.OpContext, depth int, err error) {
 				fmt.Printf("OnFault: PC: %d, OpCode: 0x%02x, Gas: %d, Cost: %d, Depth: %d, Err: %v\n", pc, op, gas, cost, depth, err)
 			},
-			// OnOpcode: tracer.OnOpcode,
+			//OnOpcode: tracer.OnOpcode,
 			//OnBalanceChange: func(addr common.Address, prev, new *big.Int, reason tracing.BalanceChangeReason) {
 			//	fmt.Printf("OnBalanceChange: Address: %s, Prev: %s, New: %s, Reason: %s\n", addr.Hex(), prev.String(), new.String(), reason)
 			//},
